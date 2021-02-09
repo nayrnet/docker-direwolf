@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN git clone "https://github.com/wb2osz/direwolf.git" /tmp/direwolf \
   && cd /tmp/direwolf \
+  && git checkout dev \
   && make \
   && make DESTDIR=/target install \
   && find /target/bin -type f -exec strip -p --strip-debug {} \;
@@ -28,7 +29,7 @@ ENV CALLSIGN "N0CALL"
 ENV PASSCODE "-1"
 ENV IGSERVER "noam.aprs2.net"
 ENV FREQUENCY "144.39M"
-ENV COMMENT "Direwolf in Docker w2bro/direwolf"
+ENV COMMENT "Direwolf in Docker"
 ENV SYMBOL "igate"
 
 COPY start.sh direwolf.conf /etc/direwolf/
