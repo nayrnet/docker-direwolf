@@ -3,7 +3,7 @@ A multi-platform image for running [Direwolf] for APRS projects
 
 ## Installing
 ### Docker
-`docker pull w2bro/direwolf`
+`docker pull nayrnet/direwolf-docker`
 
 ### Kubernetes
 ```shell
