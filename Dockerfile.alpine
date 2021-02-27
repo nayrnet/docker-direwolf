@@ -1,0 +1,63 @@
+# Work in progress
+
+FROM alpine:latest as base
+
+RUN mkdir -p /etc/direwolf
+RUN apk add --no-cache  --update rtl-sdr
+RUN apk add --no-cache  --update eudev
+RUN apk add --no-cache  --update netcat-openbsd
+RUN apk add --no-cache  --update alsa-lib
+RUN apk add --no-cache  --update libusb
+RUN apk add --no-cache  --update gpsd
+RUN apk add --no-cache  --update avahi
+#RUN apk add --no-cache  --update hamlib
+
+FROM base as builder
+RUN apk add --no-cache  --update alpine-sdk
+RUN apk add --no-cache  --update cmake
+RUN apk add --no-cache  --update eudev-dev
+RUN apk add --no-cache  --update alsa-lib-dev
+RUN apk add --no-cache  --update libusb-dev
+RUN apk add --no-cache  --update gpsd-dev
+RUN apk add --no-cache  --update avahi-dev
+#RUN apk add --no-cache  --update hamlib-dev
+
+COPY direwolf/direwolf_logs.patch /tmp/direwolf_logs.patch
+RUN git clone "https://github.com/wb2osz/direwolf.git" /tmp/direwolf \
+  && cd /tmp/direwolf \
+  && git checkout dev \
+  && rm /tmp/direwolf/external/misc/CMakeLists.txt \
+  && cd src \
+  && patch -ruN < /tmp/direwolf_logs.patch \
+  && cd /tmp/direwolf \
+  && mkdir build \ 
+  && cd build \
+  && cmake ..\
+  && make -j8\
+  && make DESTDIR=/target install \
+  && find /target/usr/local/bin/ -type f -exec strip -p --strip-debug {} \;
+
+FROM base
+COPY --from=builder /target/usr/local/bin /usr/local/bin
+COPY --from=builder /target//etc/udev/rules.d/99-direwolf-cmedia.rules /etc/udev/rules.d/99-direwolf-cmedia.rules
+
+ENV CALLSIGN "N0CALL"
+ENV PASSCODE "-1"
+ENV IGSERVER "noam.aprs2.net"
+ENV FREQUENCY "144.39M"
+ENV COMMENT "Direwolf in Docker"
+ENV SYMBOL "igate"
+
+EXPOSE 8001
+
+RUN mkdir /var/log/direwolf/
+RUN addgroup -gid 242 direwolf && adduser -q -uid 242 -gid 242 --no-create-home --disabled-login --gecos "" direwolf 
+RUN chown 242.242 /var/log/direwolf
+
+COPY direwolf/start.sh direwolf/direwolf.conf /etc/direwolf/
+COPY telegraf/dw-stats-* /usr/local/bin/
+
+USER direwolf 
+WORKDIR /etc/direwolf
+
+CMD ["/bin/bash", "/etc/direwolf/start.sh"]
