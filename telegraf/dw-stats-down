@@ -1,0 +1,5 @@
+#!/bin/bash
+# APRS-IS Traffic - MRTG Script for DireWolf
+
+source /tmp/dw-stats.txt
+echo $DNL_CNT

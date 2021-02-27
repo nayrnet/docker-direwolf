@@ -16,19 +16,23 @@ RUN apt-get update && apt-get install -y \
     cmake \
  && rm -rf /var/lib/apt/lists/*
 
+COPY direwolf/direwolf_logs.patch /tmp/direwolf_logs.patch
 RUN git clone "https://github.com/wb2osz/direwolf.git" /tmp/direwolf \
   && cd /tmp/direwolf \
   && git checkout dev \
+  && cd src \
+  && patch -ruN < /tmp/direwolf_logs.patch \
+  && cd /tmp/direwolf \
   && mkdir build \ 
   && cd build \
-  && cmake \
+  && cmake ..\
   && make -j8\
   && make DESTDIR=/target install \
-  && find /target/bin -type f -exec strip -p --strip-debug {} \;
+  && find /target/usr/local/bin/ -type f -exec strip -p --strip-debug {} \;
 
 FROM base
-COPY --from=builder /target/ /usr/local/
-COPY --from=builder /etc/udev/rules.d/99-direwolf-cmedia.rules /etc/udev/rules.d/99-direwolf-cmedia.rules
+COPY --from=builder /target/usr/local/bin /usr/local/bin
+COPY --from=builder /target//etc/udev/rules.d/99-direwolf-cmedia.rules /etc/udev/rules.d/99-direwolf-cmedia.rules
 
 ENV CALLSIGN "N0CALL"
 ENV PASSCODE "-1"
@@ -39,7 +43,13 @@ ENV SYMBOL "igate"
 
 EXPOSE 8001
 
-COPY start.sh direwolf.conf /etc/direwolf/
+RUN mkdir /var/log/direwolf/
+RUN addgroup -gid 1001 direwolf && adduser -q -uid 1001 -gid 1001 --no-create-home --disabled-login --gecos "" direwolf 
+RUN chown 1001.1001 /var/log/direwolf
+
+COPY direwolf/start.sh direwolf/direwolf.conf /etc/direwolf/
+
+USER direwolf 
 WORKDIR /etc/direwolf
 
 CMD ["/bin/bash", "/etc/direwolf/start.sh"]
