@@ -3,6 +3,10 @@ RUN mkdir -p /etc/direwolf
 RUN apt-get update && apt-get -y dist-upgrade \
  && apt-get install -y \
     rtl-sdr \
+    netcat \
+    npm \
+    git \
+    libpq-dev \
     libasound2-dev \
     libusb-1.0-0-dev \
     libhamlib-dev \
@@ -44,10 +48,12 @@ ENV SYMBOL "igate"
 EXPOSE 8001
 
 RUN mkdir /var/log/direwolf/
-RUN addgroup -gid 1001 direwolf && adduser -q -uid 1001 -gid 1001 --no-create-home --disabled-login --gecos "" direwolf 
-RUN chown 1001.1001 /var/log/direwolf
+RUN addgroup -gid 242 direwolf && adduser -q -uid 242 -gid 242 --no-create-home --disabled-login --gecos "" direwolf 
+RUN chown 242.242 /var/log/direwolf
 
+RUN npm install -g nayrnet/direwolf-log-parser
 COPY direwolf/start.sh direwolf/direwolf.conf /etc/direwolf/
+COPY telegraf/dw-stats-* /usr/local/bin/
 
 USER direwolf 
 WORKDIR /etc/direwolf
