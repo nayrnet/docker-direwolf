@@ -1,31 +1,28 @@
-# Work in progress
-
-FROM alpine:latest as base
-
-RUN mkdir -p /etc/direwolf
-RUN apk add --no-cache  --update rtl-sdr
-RUN apk add --no-cache  --update eudev
-RUN apk add --no-cache  --update netcat-openbsd
-RUN apk add --no-cache  --update alsa-lib
-RUN apk add --no-cache  --update libusb
-RUN apk add --no-cache  --update gpsd
-RUN apk add --no-cache  --update avahi
-#RUN apk add --no-cache  --update hamlib
+FROM debian:buster-slim as base
+RUN apt-get update && apt-get -y dist-upgrade \
+ && apt-get install -y \
+    rtl-sdr \
+    netcat \
+    libasound2 \
+    libusb-1.0-0 \
+    libhamlib2 \
+    libgps23 \
+ && rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apk add --no-cache  --update alpine-sdk
-RUN apk add --no-cache  --update cmake
-RUN apk add --no-cache  --update eudev-dev
-RUN apk add --no-cache  --update alsa-lib-dev
-RUN apk add --no-cache  --update libusb-dev
-RUN apk add --no-cache  --update gpsd-dev
-RUN apk add --no-cache  --update avahi-dev
-#RUN apk add --no-cache  --update hamlib-dev
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    cmake \
+    libasound2-dev \
+    libusb-1.0-0-dev \
+    libhamlib-dev \
+    libgps-dev \    
+ && rm -rf /var/lib/apt/lists/*
 
 COPY direwolf/direwolf_logs.patch /tmp/direwolf_logs.patch
 RUN git clone "https://github.com/wb2osz/direwolf.git" /tmp/direwolf \
   && cd /tmp/direwolf \
-  && git checkout dev \
   && cd src \
   && patch -ruN < /tmp/direwolf_logs.patch \
   && cd /tmp/direwolf \
@@ -53,6 +50,8 @@ RUN mkdir /var/log/direwolf/
 RUN addgroup -gid 242 direwolf && adduser -q -uid 242 -gid 242 --no-create-home --disabled-login --gecos "" direwolf 
 RUN chown 242.242 /var/log/direwolf
 
+RUN mkdir -p /etc/direwolf
+RUN chown 242.242 /etc/direwolf
 COPY direwolf/start.sh direwolf/direwolf.conf /etc/direwolf/
 COPY telegraf/dw-stats-* /usr/local/bin/
 

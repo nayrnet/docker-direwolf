@@ -1,1 +1,1 @@
-Dockerfile.debian
+Dockerfile.debian-stable

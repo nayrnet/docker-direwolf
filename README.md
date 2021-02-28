@@ -1,15 +1,32 @@
-# 📡 docker-direwolf
+# 📡 direwolf
 A multi-platform image for running [Direwolf] for APRS projects
+
+## tags:
+ - latest - built off dev branch (1.7.x)
+ - stable - built off main branch (1.6.x)
+
+## built with:
+ - runs as non-root user
+ - rtl-sdr
+ - netcat
+ - hamlib2
+ - gpsd
+
+## notes:
+This is a slightly customized version that I use for https://igate.nayr.net, it can run as a standard standalone docker install but has been specifically crafted for:
+ - direwolf stats patch of my own creation to enable SBEACON support, this is a hack to dump internal stats to a file that can be scraped externally.
+ - netcat is included so you can pipe the output via IP, I use this for the web tail.
 
 ## Installing
 ### Docker
-`docker pull nayrnet/direwolf-docker`
+Direwolf main branch:
+`docker pull nayr/direwolf:stable`
+
+Direwolf dev branch:
+`docker pull nayr/direwolf:stable`
 
 ### Kubernetes
-```shell
-helm repo add w2bro https://radio-charts.w2bro.dev
-helm install w2bro/direwolf
-```
+Soon
 
 ## Environment Variables
 
@@ -27,53 +44,6 @@ helm install w2bro/direwolf
 | `DW_STANDALONE` | No | Set to any value to disable rtl_fm, useful in digipeater applications. Must also set `ADEVICE` |
 | `DWARGS` | No | Set to add/pass any arguments to the direwolf executable, example `-t 0` for no color logs |
 
-## Example Usage
-
-### Kubernetes
-Example deployment to run on a [k3s] Raspberry Pi node with a RTL-SDR Blog v3 dongle plugged into one of the USB ports
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: aprs-igate
-  namespace: ham-radio
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: aprs-igate
-  template:
-    metadata:
-      labels:
-        app: aprs-igate
-    spec:
-      nodeName: homelab-pi4b-node-attic-2
-      containers:
-      - name: direwolf
-        image: w2bro/direwolf
-        imagePullPolicy: Always
-        securityContext:
-          privileged: true
-        env:
-        - name: CALLSIGN
-          value: N0CALL-10
-        - name: PASSCODE
-          value: "12345"
-        - name: FREQUENCY
-          value: 144.39M
-        - name: LATITUDE
-          value: 42^37.14N
-        - name: LONGITUDE
-          value: 071^20.83W
-        volumeMounts:
-        - mountPath: /dev/bus/usb/001/004
-          name: rtl
-      volumes:
-      - name: rtl
-        hostPath:
-          path: /dev/bus/usb/001/004
-```
 [Direwolf]: https://github.com/wb2osz/direwolf
 [find passcode here]: https://w2b.ro/tools/aprs-passcode/
 [k3s]: https://k3s.io
