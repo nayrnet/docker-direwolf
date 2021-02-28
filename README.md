@@ -26,7 +26,7 @@ Direwolf main branch:
 `docker pull nayr/direwolf:stable`
 
 Direwolf dev branch:
-`docker pull nayr/direwolf:stable`
+`docker pull nayr/direwolf:latest`
 
 ### Kubernetes
 Soon
