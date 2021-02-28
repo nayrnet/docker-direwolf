@@ -19,6 +19,7 @@ This is a slightly customized version that I use for https://igate.nayr.net, it 
    - this is harmless, with below config it will dump stats out to /tmp/dw-stats.txt every 5m
      - SBEACON	sendto=IG delay=00:30 every=5
    - requires a metrics scraping sidecar, /tmp ramdisk and start script to copy /usr/local/bin/dw-* scripts to /tmp for sidecar.
+
 I with further testing and development I intend to release both docker-compose and helm charts to easily and quickly deploy your own igate site like mine.
 
 ## Installing
