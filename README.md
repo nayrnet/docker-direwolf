@@ -14,8 +14,11 @@ A multi-platform image for running [Direwolf] for APRS projects
 
 ## notes:
 This is a slightly customized version that I use for https://igate.nayr.net, it can run as a standard standalone docker install but has been specifically crafted for:
+ - netcat is included so you can pipe the output via IP, I use this for the web tail to a sidecar.
  - direwolf stats patch of my own creation to enable SBEACON support, this is a hack to dump internal stats to a file that can be scraped externally.
- - netcat is included so you can pipe the output via IP, I use this for the web tail.
+   - this is harmless, with below config it will dump stats out to /tmp/dw-stats.txt every 5m
+     - SBEACON	sendto=IG delay=00:30 every=5
+   - requires a metrics scraping sidecar, /tmp ramdisk and start script to copy /usr/local/bin/dw-* scripts to /tmp for sidecar.
 
 ## Installing
 ### Docker
