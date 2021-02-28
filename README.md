@@ -20,7 +20,7 @@ This is a slightly customized version that I use for https://igate.nayr.net, it 
      - SBEACON	sendto=IG delay=00:30 every=5
    - requires a metrics scraping sidecar, /tmp ramdisk and start script to copy /usr/local/bin/dw-* scripts to /tmp for sidecar.
 
-I with further testing and development I intend to release both docker-compose and helm charts to easily and quickly deploy your own igate site like mine.
+> I with further testing and development I intend to release both docker-compose and helm charts to easily and quickly deploy your own igate site like mine.
 
 ## Installing
 ### Docker
@@ -35,16 +35,21 @@ Direwolf dev branch:
  - direwolf (stable or dev)
    - telegraf sidecar to scrape metrics
    - frontail sidecar to direwolf Web Console
+   - docker-log-parser to scrape logs to db
  - InfluxDB
  - Grafana
  - Postgres
  - Nginx
 
 ### Kubernetes (soon)
- Helm Install HA Stack with:
+> If you Transmit you should run 1 instance with hardware wired in paralell across multiple nodes and failover.
+> If you Recieeve only then you can run multiple instances on each node you wire audio/radios up to.
+
+ Helm Install HA Stack  with:
  - direwolf (stable or dev)
-   - telegraf sidecar to scrape metrics
+   - telegraf sidecar to scrape metrics to InfluxDB
    - frontail sidecar to direwolf Web Console
+   - docker-log-parser to scrape logs to Postgres
  - InfluxDB Operator for HA Setup
  - Grafana
  - Postgres Operator for HA Setup
@@ -66,6 +71,15 @@ Direwolf dev branch:
 | `DW_STANDALONE` | No | Set to any value to disable rtl_fm, useful in digipeater applications. Must also set `ADEVICE` |
 | `DWARGS` | No | Set to add/pass any arguments to the direwolf executable, example `-t 0` for no color logs |
 
+## ToDo:
+ - Flush out Kubernetes setup and further testing.
+ - Flush out Docker Componse for simpler deployment.
+ - Write a health monitoring script and include it in the image.
+   - Check Age of stats file (configurable)
+   - Check Age of log file (configurable)
+   - Check Device status (configurable
+
 [Direwolf]: https://github.com/wb2osz/direwolf
 [find passcode here]: https://w2b.ro/tools/aprs-passcode/
 [k3s]: https://k3s.io
+[rancher]: https://rancher.com/
