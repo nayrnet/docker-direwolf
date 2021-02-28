@@ -19,6 +19,7 @@ This is a slightly customized version that I use for https://igate.nayr.net, it 
    - this is harmless, with below config it will dump stats out to /tmp/dw-stats.txt every 5m
      - SBEACON	sendto=IG delay=00:30 every=5
    - requires a metrics scraping sidecar, /tmp ramdisk and start script to copy /usr/local/bin/dw-* scripts to /tmp for sidecar.
+I with further testing and development I intend to release both docker-compose and helm charts to easily and quickly deploy your own igate site like mine.
 
 ## Installing
 ### Docker
@@ -28,8 +29,25 @@ Direwolf main branch:
 Direwolf dev branch:
 `docker pull nayr/direwolf:latest`
 
-### Kubernetes
-Soon
+## Docker Componse (soon)
+ Full Standalone Stack with:
+ - direwolf (stable or dev)
+   - telegraf sidecar to scrape metrics
+   - frontail sidecar to direwolf Web Console
+ - InfluxDB
+ - Grafana
+ - Postgres
+ - Nginx
+
+### Kubernetes (soon)
+ Helm Install HA Stack with:
+ - direwolf (stable or dev)
+   - telegraf sidecar to scrape metrics
+   - frontail sidecar to direwolf Web Console
+ - InfluxDB Operator for HA Setup
+ - Grafana
+ - Postgres Operator for HA Setup
+ - Node Feature Discovery to find nodes with required hardware.
 
 ## Environment Variables
 
