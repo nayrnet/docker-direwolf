@@ -75,9 +75,9 @@ Direwolf dev branch:
  - Flush out Kubernetes setup and further testing.
  - Flush out Docker Componse for simpler deployment.
  - Write a health monitoring script and include it in the image.
-   - Check Age of stats file (configurable)
-   - Check Age of log file (configurable)
-   - Check Device status (configurable
+   - Compare Checksum stats file (configurable)
+   - Compare Size of log file (configurable)
+   - Check Device status (configurable)
 
 [Direwolf]: https://github.com/wb2osz/direwolf
 [find passcode here]: https://w2b.ro/tools/aprs-passcode/

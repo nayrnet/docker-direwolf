@@ -1,0 +1,19 @@
+#!/bin/bash
+# Simple health checker that compares last modified of the log file.
+# In my area this has no problem running every 1m, check approprately in quiet areas.
+
+DWHEALTH="${DWHEALTH:-/tmp/dw-health.txt}"
+DWLOG="${1:-/var/log/direwolf/direwolf.log}"
+
+if [ -f "$DWHEALTH" ];then
+	date=$(cat $DWHEALTH)
+	date2=$(stat -c %y "$DWLOG")
+	if [[ $date2 != $date ]]; then
+		stat -c %y "$DWLOG" > $DWHEALTH
+		exit 0
+	else
+		exit 1
+	fi
+else
+	stat -c %y "$1" > $DWHEALTH
+fi

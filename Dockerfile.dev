@@ -51,9 +51,8 @@ RUN mkdir /var/log/direwolf/
 RUN addgroup -gid 242 direwolf && adduser -q -uid 242 -gid 242 --no-create-home --disabled-login --gecos "" direwolf 
 RUN chown 242.242 /var/log/direwolf
 
-RUN mkdir -p /etc/direwolf
+COPY direwolf /etc/direwolf
 RUN chown 242.242 /etc/direwolf
-COPY direwolf/start.sh direwolf/direwolf.conf /etc/direwolf/
 COPY telegraf/dw-stats-* /usr/local/bin/
 
 USER direwolf 
